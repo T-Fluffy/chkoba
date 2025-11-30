@@ -1,7 +1,9 @@
 [gd_resource type="Resource" script_class="CardData" load_steps=2 format=3 uid="uid://b7dmubbkoljwn"]
 
-[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Data/CardData.gd" id="1_hllk5"]
+[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Data/CardData.gd" id="1_qri5p"]
 
 [resource]
-script = ExtResource("1_hllk5")
+script = ExtResource("1_qri5p")
+value = 8
+card_name = "8 of Diamonds"
 metadata/_custom_type_script = "uid://b6pcxfo1t35f4"

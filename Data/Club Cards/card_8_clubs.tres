@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=2 format=3 uid="uid://bsd5oc0c7uk5g"]
+
+[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Data/CardData.gd" id="1_ib0wu"]
+
+[resource]
+script = ExtResource("1_ib0wu")
+value = 8
+suit = "Clubs"
+card_name = "8 of Clubs"
+metadata/_custom_type_script = "uid://b6pcxfo1t35f4"

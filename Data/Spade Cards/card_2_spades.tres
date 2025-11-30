@@ -4,4 +4,7 @@
 
 [resource]
 script = ExtResource("1_ujv8y")
+value = 2
+suit = "Spades"
+card_name = "2 of Spades"
 metadata/_custom_type_script = "uid://b6pcxfo1t35f4"

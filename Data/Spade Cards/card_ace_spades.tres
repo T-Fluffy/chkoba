@@ -1,7 +1,9 @@
 [gd_resource type="Resource" script_class="CardData" load_steps=2 format=3 uid="uid://c4mvhs5ddam4w"]
 
-[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Data/CardData.gd" id="1_7sdht"]
+[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Data/CardData.gd" id="1_k61v3"]
 
 [resource]
-script = ExtResource("1_7sdht")
+script = ExtResource("1_k61v3")
+suit = "Spades"
+card_name = "Ace of Spades"
 metadata/_custom_type_script = "uid://b6pcxfo1t35f4"

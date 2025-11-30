@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=2 format=3 uid="uid://boooxmquc2gmy"]
+
+[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Data/CardData.gd" id="1_jcdsk"]
+
+[resource]
+script = ExtResource("1_jcdsk")
+suit = "Clubs"
+card_name = "Ace of Clubs"
+metadata/_custom_type_script = "uid://b6pcxfo1t35f4"
