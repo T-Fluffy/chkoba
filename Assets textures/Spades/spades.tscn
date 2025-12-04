@@ -1,0 +1,89 @@
+[gd_scene load_steps=3 format=3 uid="uid://bqebtg0l8vh00"]
+
+[ext_resource type="Script" uid="uid://rj04f2ck6mbf" path="res://addons/sprite_cutter/AtlasScene.gd" id="1_86kxq"]
+[ext_resource type="Texture2D" uid="uid://dctelum6pbcpf" path="res://Assets textures/PlayingCards 128x178.png" id="2_dv64w"]
+
+[node name="AtlasScene" type="Node"]
+script = ExtResource("1_86kxq")
+destination_path = "res://Assets textures"
+metadata/_custom_type_script = "uid://rj04f2ck6mbf"
+metadata/_edit_vertical_guides_ = [21.0]
+metadata/_edit_horizontal_guides_ = [18.0]
+
+[node name="Ace of spade" type="Sprite2D" parent="."]
+position = Vector2(85, 106)
+texture = ExtResource("2_dv64w")
+region_enabled = true
+region_rect = Rect2(-0.019176483, 355.6411, 126.668, 176.36316)
+
+[node name="2 of spade" type="Sprite2D" parent="."]
+position = Vector2(225, 106)
+texture = ExtResource("2_dv64w")
+region_enabled = true
+region_rect = Rect2(128, 356, 128, 178)
+
+[node name="3 of spade" type="Sprite2D" parent="."]
+position = Vector2(363, 107)
+texture = ExtResource("2_dv64w")
+region_enabled = true
+region_rect = Rect2(256, 356, 128, 178)
+
+[node name="4 of spade" type="Sprite2D" parent="."]
+position = Vector2(502, 108)
+texture = ExtResource("2_dv64w")
+region_enabled = true
+region_rect = Rect2(384, 357, 128, 177)
+
+[node name="5 of spade" type="Sprite2D" parent="."]
+position = Vector2(641, 108)
+texture = ExtResource("2_dv64w")
+region_enabled = true
+region_rect = Rect2(512, 356, 128, 178)
+
+[node name="6 of spade" type="Sprite2D" parent="."]
+position = Vector2(779, 108)
+texture = ExtResource("2_dv64w")
+region_enabled = true
+region_rect = Rect2(640, 356, 128, 178)
+
+[node name="7 of spade" type="Sprite2D" parent="."]
+position = Vector2(918, 108)
+texture = ExtResource("2_dv64w")
+region_enabled = true
+region_rect = Rect2(768, 356, 128, 178)
+
+[node name="8 of spade" type="Sprite2D" parent="."]
+position = Vector2(1057, 107)
+texture = ExtResource("2_dv64w")
+region_enabled = true
+region_rect = Rect2(896, 356, 128, 178)
+
+[node name="9 of spade" type="Sprite2D" parent="."]
+position = Vector2(86, 299)
+texture = ExtResource("2_dv64w")
+region_enabled = true
+region_rect = Rect2(1024, 356, 128, 178)
+
+[node name="10 of spade" type="Sprite2D" parent="."]
+position = Vector2(225, 300)
+texture = ExtResource("2_dv64w")
+region_enabled = true
+region_rect = Rect2(1152, 356, 128, 178)
+
+[node name="Jack of spade" type="Sprite2D" parent="."]
+position = Vector2(364, 300)
+texture = ExtResource("2_dv64w")
+region_enabled = true
+region_rect = Rect2(1280, 356, 128, 178)
+
+[node name="Qween of spade" type="Sprite2D" parent="."]
+position = Vector2(505, 300)
+texture = ExtResource("2_dv64w")
+region_enabled = true
+region_rect = Rect2(1408, 356, 128, 178)
+
+[node name="King of spade" type="Sprite2D" parent="."]
+position = Vector2(644, 300)
+texture = ExtResource("2_dv64w")
+region_enabled = true
+region_rect = Rect2(1536, 356, 128, 178)
