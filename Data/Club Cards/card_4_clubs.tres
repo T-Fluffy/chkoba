@@ -1,7 +1,9 @@
-[gd_resource type="Resource" script_class="CardData" load_steps=2 format=3 uid="uid://chpe745g34tk2"]
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3 uid="uid://chpe745g34tk2"]
 
-[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Data/CardData.gd" id="1_2awqo"]
+[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Scripts/CardData.gd" id="1_2awqo"]
+[ext_resource type="Texture2D" uid="uid://batfxe6amptdj" path="res://Assets textures/Clubs/4 of diamonds.atlastex" id="2_ve6aa"]
 
 [resource]
 script = ExtResource("1_2awqo")
+texture = ExtResource("2_ve6aa")
 metadata/_custom_type_script = "uid://b6pcxfo1t35f4"

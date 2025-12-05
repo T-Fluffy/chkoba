@@ -1,10 +1,12 @@
-[gd_resource type="Resource" script_class="CardData" load_steps=2 format=3 uid="uid://c0vts1ejneyo4"]
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3 uid="uid://c0vts1ejneyo4"]
 
-[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Data/CardData.gd" id="1_y1mpd"]
+[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Scripts/CardData.gd" id="1_y1mpd"]
+[ext_resource type="Texture2D" uid="uid://d1sg4r5svhssv" path="res://Assets textures/Spades/Qween of spade.atlastex" id="2_w4v8k"]
 
 [resource]
 script = ExtResource("1_y1mpd")
 value = 12
 suit = "Spades"
+texture = ExtResource("2_w4v8k")
 card_name = "Qween of Spades"
 metadata/_custom_type_script = "uid://b6pcxfo1t35f4"

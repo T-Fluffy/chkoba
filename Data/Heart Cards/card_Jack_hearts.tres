@@ -1,10 +1,12 @@
-[gd_resource type="Resource" script_class="CardData" load_steps=2 format=3 uid="uid://hl0epm36c3o5"]
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3 uid="uid://hl0epm36c3o5"]
 
-[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Data/CardData.gd" id="1_blnck"]
+[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Scripts/CardData.gd" id="1_blnck"]
+[ext_resource type="Texture2D" uid="uid://bf0ibubjqg0d1" path="res://Assets textures/Hearts/Jack of hearts.atlastex" id="2_flkly"]
 
 [resource]
 script = ExtResource("1_blnck")
 value = 11
 suit = "Hearts"
+texture = ExtResource("2_flkly")
 card_name = "Jack of Hearts"
 metadata/_custom_type_script = "uid://b6pcxfo1t35f4"

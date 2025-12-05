@@ -1,10 +1,12 @@
-[gd_resource type="Resource" script_class="CardData" load_steps=2 format=3 uid="uid://blimi2wq3xcjk"]
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3 uid="uid://blimi2wq3xcjk"]
 
-[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Data/CardData.gd" id="1_0cmmd"]
+[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Scripts/CardData.gd" id="1_0cmmd"]
+[ext_resource type="Texture2D" uid="uid://erdyakkmyp5m" path="res://Assets textures/Clubs/Qween of diamonds.atlastex" id="2_t0kdp"]
 
 [resource]
 script = ExtResource("1_0cmmd")
 value = 12
 suit = "Clubs"
+texture = ExtResource("2_t0kdp")
 card_name = "Qween of Clubs"
 metadata/_custom_type_script = "uid://b6pcxfo1t35f4"

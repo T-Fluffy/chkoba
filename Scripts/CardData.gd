@@ -16,8 +16,8 @@ class_name CardData extends Resource
 # For Barmila, only 7s and 6s matter, and the 7 of Diamonds is key.
 # A property that checks if this is the all-important 7 of Diamonds
 func is_seven_of_diamonds() -> bool:
-    return value == 7 and suit == "Diamonds"
+	return value == 7 and suit == "Diamonds"
 
 # A helper to quickly check if a card is a Diamond (Il Dineri)
 func is_diamond() -> bool:
-    return suit == "Diamonds"
+	return suit == "Diamonds"
