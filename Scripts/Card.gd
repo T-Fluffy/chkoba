@@ -21,7 +21,6 @@ func initialize(card_data: CardData):
 func _input_event(viewport, event: InputEvent, shape_idx):
 	if event.is_action_pressed("click"): # Define "click" in Input Map
 		print("Card clicked: " + data.card_name)
-		
 		# Emit a signal that the player is attempting to play this card
 		# This signal is caught by the main UI/GameManager
 		# get_parent().emit_signal("card_played", self) 
