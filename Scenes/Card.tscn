@@ -1,12 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://ejlylte7vruw"]
+[gd_scene load_steps=3 format=3 uid="uid://ejlylte7vruw"]
 
 [ext_resource type="Script" uid="uid://neool368130d" path="res://Scripts/Card.gd" id="1_pnb5n"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pnb5n"]
+size = Vector2(175, 276)
 
 [node name="Card" type="Area2D"]
 script = ExtResource("1_pnb5n")
 
-[node name="CardSize" type="CollisionShape2D" parent="."]
-
 [node name="CardImage" type="TextureRect" parent="."]
+offset_top = 1.0
 offset_right = 40.0
-offset_bottom = 40.0
+offset_bottom = 41.0
+scale = Vector2(4.355297, 6.859307)
+
+[node name="CardSize" type="CollisionShape2D" parent="."]
+position = Vector2(87, 139)
+shape = SubResource("RectangleShape2D_pnb5n")

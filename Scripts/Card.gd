@@ -1,28 +1,49 @@
-# Card.gd (Attached to the Card Area2D scene)
-extends Area2D
 class_name Card
+extends Area2D
 
-# A reference to the data object for this specific card instance
-var data: CardData
+# --- CARD DATA ---
+var rank: String
+var suit: String
+var value: int # Chkobba capture value (1-13)
 
-# A reference to the TextureRect node
-@onready var texture_rect: TextureRect = $TextureRect
+# --- REFERENCES ---
+@onready var sprite: Sprite2D = $Sprite2D
 
-# --- Initialization function ---
-# Called by the GameManager when dealing the card
-func initialize(card_data: CardData):
-	self.data = card_data
-	texture_rect.texture = data.texture 
+# --- STATE ---
+var is_held_by_player: bool = false
+var is_selected: bool = false
+
+# Signal emitted when this card is clicked (used by GameManager)
+signal card_played(card: Card)
+
+# --- INITIALIZATION ---
+
+# Function called by GameManager to set the card's identity and visual
+func setup_card(new_rank: String, new_suit: String, new_value: int):
+	self.rank = new_rank
+	self.suit = new_suit
+	self.value = new_value
 	
-	# Set a name for easier debugging in the Remote Scene Tree
-	name = data.card_name.replace(" ", "_")
+	# Placeholder for visual update: In a real game, you would load the texture here
+	# For now, let's just update the name for debugging
+	name = "%s_of_%s" % [rank, suit]
+	
+	# Example: Display value on the Sprite (assuming you set up different sprites for faces)
+	# sprite.texture = load("res://assets/cards/%s_%s.png" % [rank, suit])
+	pass
 
-# --- Basic Player Interaction ---
-func _input_event(viewport, event: InputEvent, shape_idx):
-	if event.is_action_pressed("click"): # Define "click" in Input Map
-		print("Card clicked: " + data.card_name)
-		
-		# Emit a signal that the player is attempting to play this card
-		# This signal is caught by the main UI/GameManager
-		# get_parent().emit_signal("card_played", self) 
-		pass
+# --- INPUT HANDLING ---
+
+# Fixes the unused parameter warnings by prefixing them with an underscore
+func _input_event(_viewport: Node, event: InputEvent, _shape_idx: int):
+	# Check if the event is a left mouse button click
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.is_pressed():
+			# 1. Only allow interaction if the card is in the player's hand
+			if is_held_by_player and GameManager.is_player_turn:
+				# 2. Tell the GameManager to process the card play
+				emit_signal("card_played", self)
+			elif not is_held_by_player and not GameManager.is_player_turn:
+				# 3. If the card is on the table, it might be for selection during a capture
+				# This is where capture target selection logic would go
+				pass
