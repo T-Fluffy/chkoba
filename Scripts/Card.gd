@@ -4,46 +4,75 @@ extends Area2D
 # --- CARD DATA ---
 var rank: String
 var suit: String
-var value: int # Chkobba capture value (1-13)
+var value: int 
 
 # --- REFERENCES ---
-@onready var sprite: Sprite2D = $Sprite2D
+var sprite: Sprite2D 
+var label: Label 
 
 # --- STATE ---
 var is_held_by_player: bool = false
 var is_selected: bool = false
 
-# Signal emitted when this card is clicked (used by GameManager)
 signal card_played(card: Card)
 
 # --- INITIALIZATION ---
 
-# Function called by GameManager to set the card's identity and visual
-func setup_card(new_rank: String, new_suit: String, new_value: int):
+func setup_card(new_rank: String, new_suit: String, new_value: int, atlas_texture: Texture2D):
+	
+	# === Manually fetch the node references ===
+	sprite = get_node("Sprite2D")
+	label = get_node("Label")
+	
 	self.rank = new_rank
 	self.suit = new_suit
 	self.value = new_value
 	
-	# Placeholder for visual update: In a real game, you would load the texture here
-	# For now, let's just update the name for debugging
+	# -------------------------
+	# --- VISUAL UPDATE LOGIC (ATLAS TEXTURE) ---
+	# -------------------------
+	
+	if atlas_texture and is_instance_valid(sprite):
+		var card_region = GameManager.get_card_region(new_rank, new_suit)
+		
+		# === DEBUGGING: Print the coordinates being used ===
+		print("Card %s_%s using region: %s" % [new_rank, new_suit, card_region])
+		# ==================================================
+		
+		var atlas_card = AtlasTexture.new()
+		atlas_card.atlas = atlas_texture
+		atlas_card.region = card_region
+		
+		sprite.texture = atlas_card
+		
+		# Ensure the sprite displays the region properly
+		sprite.centered = false
+		sprite.region_enabled = true
+		# We set the region_rect to the region itself
+		sprite.region_rect = card_region
+		
+	else:
+		print("ERROR: Atlas texture not provided or Sprite node invalid.")
+		
+	# Update the node name in the scene tree for easy debugging
 	name = "%s_of_%s" % [rank, suit]
 	
-	# Example: Display value on the Sprite (assuming you set up different sprites for faces)
-	# sprite.texture = load("res://assets/cards/%s_%s.png" % [rank, suit])
-	pass
+	# Update the Label node 
+	if is_instance_valid(label):
+		label.text = "[%d]\n%s of %s" % [new_value, new_rank, new_suit]
+		
+	pass 
+	
+# --- INPUT HANDLING (UNCHANGED) ---
 
-# --- INPUT HANDLING ---
-
-# Fixes the unused parameter warnings by prefixing them with an underscore
 func _input_event(_viewport: Node, event: InputEvent, _shape_idx: int):
-	# Check if the event is a left mouse button click
+	if not is_instance_valid(sprite) or sprite.texture == null:
+		return
+
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.is_pressed():
-			# 1. Only allow interaction if the card is in the player's hand
 			if is_held_by_player and GameManager.is_player_turn:
-				# 2. Tell the GameManager to process the card play
 				emit_signal("card_played", self)
-			elif not is_held_by_player and not GameManager.is_player_turn:
-				# 3. If the card is on the table, it might be for selection during a capture
-				# This is where capture target selection logic would go
+			
+			elif not is_held_by_player and GameManager.is_player_turn:
 				pass

@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bwiaqpdumqybj"]
 
 [ext_resource type="Script" uid="uid://rj04f2ck6mbf" path="res://addons/sprite_cutter/AtlasScene.gd" id="1_oe3qw"]
-[ext_resource type="Texture2D" uid="uid://dctelum6pbcpf" path="res://Assets textures/PlayingCards 128x178.png" id="2_nd0ug"]
+[ext_resource type="Texture2D" uid="uid://dctelum6pbcpf" path="res://assets/PlayingCards 128x178.png" id="2_nd0ug"]
 
 [node name="Clubs" type="Node"]
 script = ExtResource("1_oe3qw")

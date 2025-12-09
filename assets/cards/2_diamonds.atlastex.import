@@ -2,16 +2,12 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dctelum6pbcpf"
-path="res://.godot/imported/PlayingCards 128x178.png-161a8014f73e501bf66fb0d58f4f0624.ctex"
-metadata={
-"vram_texture": false
-}
+uid="uid://dju6gnjinh7aa"
+valid=false
 
 [deps]
 
-source_file="res://Assets textures/PlayingCards 128x178.png"
-dest_files=["res://.godot/imported/PlayingCards 128x178.png-161a8014f73e501bf66fb0d58f4f0624.ctex"]
+source_file="res://Assets/Cards/2_diamonds.png"
 
 [params]
 

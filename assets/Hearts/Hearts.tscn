@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://j1iwnfsx74ej"]
 
 [ext_resource type="Script" uid="uid://rj04f2ck6mbf" path="res://addons/sprite_cutter/AtlasScene.gd" id="1_ghuym"]
-[ext_resource type="Texture2D" uid="uid://dctelum6pbcpf" path="res://Assets textures/PlayingCards 128x178.png" id="2_3cm3r"]
+[ext_resource type="Texture2D" uid="uid://dctelum6pbcpf" path="res://assets/PlayingCards 128x178.png" id="2_3cm3r"]
 
 [node name="Hearts" type="Node"]
 script = ExtResource("1_ghuym")
