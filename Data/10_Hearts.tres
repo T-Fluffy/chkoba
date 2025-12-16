@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3 uid="uid://cgsdc1hlfitor"]
+
+[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Scripts/CardData.gd" id="1_gfseq"]
+[ext_resource type="Texture2D" uid="uid://cm6loy3ecv5gj" path="res://assets/cards/10_Hearts.png" id="2_gfseq"]
+
+[resource]
+script = ExtResource("1_gfseq")
+value = 10
+suit = "Hearts"
+texture = ExtResource("2_gfseq")
+card_name = "10_Hearts"
+metadata/_custom_type_script = "uid://b6pcxfo1t35f4"

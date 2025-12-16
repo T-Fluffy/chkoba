@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3 uid="uid://dqcp33whu1n5c"]
+
+[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Scripts/CardData.gd" id="1_bpf20"]
+[ext_resource type="Texture2D" uid="uid://cg7o4qdipyogr" path="res://assets/cards/2_Spades.png" id="2_bpf20"]
+
+[resource]
+script = ExtResource("1_bpf20")
+value = 2
+suit = "Spades"
+texture = ExtResource("2_bpf20")
+card_name = "2_Spades"
+metadata/_custom_type_script = "uid://b6pcxfo1t35f4"
