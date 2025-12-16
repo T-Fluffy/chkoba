@@ -31,4 +31,4 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/sprite_cutter/plugin.cfg")
+enabled=PackedStringArray()

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CardData" load_steps=3 format=3 uid="uid://dp1lwn0uqvrmc"]
+
+[ext_resource type="Script" uid="uid://b6pcxfo1t35f4" path="res://Scripts/CardData.gd" id="1_20qvu"]
+[ext_resource type="Texture2D" uid="uid://w1txgud02ibl" path="res://assets/cards/A_Clubs.png" id="2_pdnoo"]
+
+[resource]
+script = ExtResource("1_20qvu")
+value = 1
+suit = "Clubs"
+texture = ExtResource("2_pdnoo")
+card_name = "A_Clubs"
+metadata/_custom_type_script = "uid://b6pcxfo1t35f4"

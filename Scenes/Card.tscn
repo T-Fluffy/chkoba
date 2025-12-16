@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://neool368130d" path="res://Scripts/Card.gd" id="1_pnb5n"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pnb5n"]
-size = Vector2(81, 142)
+size = Vector2(58, 90)
 
 [node name="Card" type="Area2D" groups=["Cards"]]
 script = ExtResource("1_pnb5n")
@@ -19,8 +19,9 @@ grow_horizontal = 2
 scale = Vector2(0.72000015, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(28, 45)
+position = Vector2(32, 47)
 scale = Vector2(0.44444445, 0.5)
 
 [node name="CardSize" type="CollisionShape2D" parent="."]
+position = Vector2(32, 47)
 shape = SubResource("RectangleShape2D_pnb5n")
