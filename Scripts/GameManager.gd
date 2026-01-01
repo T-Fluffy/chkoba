@@ -1,7 +1,7 @@
 extends Node
 
 # --- Import Library ---
-const CardLib = preload("res://Scripts/Cards/CardLibrary.gd")
+const CardLib = preload("res://scripts/Cards/CardLibrary.gd")
 
 # --- CONSTANTS ---
 const MAX_TABLE_SLOTS = 10 

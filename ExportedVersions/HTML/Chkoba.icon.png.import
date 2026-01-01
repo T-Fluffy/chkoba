@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://m6lk5vunkwv5"
-path="res://.godot/imported/Chkoba.icon.png-4c7720639b153ffa7bbb07983d36ad73.ctex"
+uid="uid://deix57rxltx4y"
+path="res://.godot/imported/Chkoba.icon.png-537c494990d65cb0aaee0762b911a0da.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://ExportedVersions/HTML/Chkoba.icon.png"
-dest_files=["res://.godot/imported/Chkoba.icon.png-4c7720639b153ffa7bbb07983d36ad73.ctex"]
+source_file="res://exportedVersions/HTML/Chkoba.icon.png"
+dest_files=["res://.godot/imported/Chkoba.icon.png-537c494990d65cb0aaee0762b911a0da.ctex"]
 
 [params]
 
