@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://30krixyibnb4"
-path="res://.godot/imported/Chkoba.png-f1f71c289bbfe33c90a0d6734a144cc8.ctex"
+uid="uid://cxosfk56kfr5g"
+path="res://.godot/imported/Camp.jpg-e019bbf4d03c46f98d8a537f7749fce5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://ExportedVersions/HTML/Chkoba.png"
-dest_files=["res://.godot/imported/Chkoba.png-f1f71c289bbfe33c90a0d6734a144cc8.ctex"]
+source_file="res://assets/Background Images/Camp.jpg"
+dest_files=["res://.godot/imported/Camp.jpg-e019bbf4d03c46f98d8a537f7749fce5.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://elahg77ylo73"
-path="res://.godot/imported/Chkoba.180x180.png-9ebcbbadf6aacdbdf449c0a0b2b40e85.ctex"
+path="res://.godot/imported/Chkoba.180x180.png-97f88e13b9147f6ddfff8b943dbae7b2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://exportedVersions/HTML/Chkoba.180x180.png"
-dest_files=["res://.godot/imported/Chkoba.180x180.png-9ebcbbadf6aacdbdf449c0a0b2b40e85.ctex"]
+source_file="res://ExportedVersions/HTML/Chkoba.180x180.png"
+dest_files=["res://.godot/imported/Chkoba.180x180.png-97f88e13b9147f6ddfff8b943dbae7b2.ctex"]
 
 [params]
 
