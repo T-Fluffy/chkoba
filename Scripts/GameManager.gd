@@ -5,6 +5,7 @@ const CardLib = preload("res://scripts/Cards/CardLibrary.gd")
 
 # --- CONSTANTS ---
 const MAX_TABLE_SLOTS = 10 
+const CARD_BACK_PATH = "res://assets/card back black.png"
 
 # --- GLOBAL GAME STATE ---
 var deck: Array = []
@@ -21,7 +22,19 @@ var is_player_turn: bool = true
 var game_active: bool = false
 var texture_cache: Dictionary = {}
 
+# --- DEBUG SETTINGS ---
+# NEW: @export makes this visible in the Inspector.
+# The 'set' function allows you to toggle this in the "Remote" tab while playing 
+# and see the changes happen instantly.
+@export var debug_show_ai_cards: bool = false:
+	set(value):
+		debug_show_ai_cards = value
+		# Only try to update visuals if the node is actually running in the scene
+		if is_inside_tree():
+			_update_all_ai_card_visuals()
+
 const CARD_SCENE = preload("res://scenes/Card.tscn") 
+var card_back_tex = preload(CARD_BACK_PATH)
 
 # --- UI ELEMENTS ---
 var menu_layer: CanvasLayer = null
@@ -34,7 +47,6 @@ var button_container: VBoxContainer
 var background_textures: Array = []
 var current_bg_index: int = 0
 
-# IMPORTANT: Ensure these paths match your folder structure EXACTLY (Case-Sensitive!)
 var bg_paths = [
 	"res://assets/Background Images/Camp.jpg",
 	"res://assets/Background Images/ChangaiPixel.jpg",
@@ -108,6 +120,8 @@ func setup_ui():
 	var btn_ai = _create_menu_button("PLAY VS COMPUTER")
 	btn_ai.pressed.connect(_on_start_pressed)
 	button_container.add_child(btn_ai)
+
+	# --- REMOVED DEBUG BUTTON HERE (Clean UI) ---
 	
 	var btn_bg = _create_menu_button("SWITCH BACKGROUND")
 	btn_bg.pressed.connect(_cycle_background)
@@ -154,6 +168,7 @@ func spawn_card(card_data: Dictionary, slot_index: int, target: String):
 	var tex_key = "%s_%s" % [card_data.rank, card_data.suit]
 	var tex = texture_cache.get(tex_key)
 	card_instance.setup_card(card_data.rank, card_data.suit, card_data.value, tex)
+	
 	match target:
 		"player":
 			card_instance.is_held_by_player = true
@@ -163,12 +178,31 @@ func spawn_card(card_data: Dictionary, slot_index: int, target: String):
 		"computer":
 			card_instance.is_held_by_player = false
 			card_instance.position = get_computer_position(slot_index)
-			if card_instance.has_method("show_back"): card_instance.show_back()
 			computer_hand.append(card_instance)
+			# Apply visual style based on current debug setting
+			_apply_ai_card_style(card_instance)
 		"table":
 			card_instance.is_held_by_player = false
 			card_instance.position = get_table_position(slot_index)
 			table_slots[slot_index] = card_instance
+
+# Visual Update Logic
+func _apply_ai_card_style(card_instance):
+	if debug_show_ai_cards:
+		# DEBUG ON: Show the face, but tint it gray so we know it's AI's
+		if card_instance.has_method("show_face"): 
+			card_instance.show_face()
+		card_instance.modulate = Color(0.4, 0.4, 0.4) 
+	else:
+		# DEBUG OFF: Show the actual card back, reset color to white
+		if card_instance.has_method("show_back"):
+			card_instance.show_back()
+		card_instance.modulate = Color(1, 1, 1)
+
+func _update_all_ai_card_visuals():
+	for card in computer_hand:
+		if is_instance_valid(card):
+			_apply_ai_card_style(card)
 
 func _on_card_played(card):
 	if not is_player_turn: return 
@@ -192,7 +226,11 @@ func execute_computer_turn():
 	var selected_card = computer_hand[0]
 	var captures = find_best_capture(selected_card.value)
 	computer_hand.erase(selected_card)
+	
+	# Always reset appearance when AI plays the card to the table
+	selected_card.modulate = Color(1, 1, 1)
 	if selected_card.has_method("show_face"): selected_card.show_face()
+	
 	if captures.is_empty():
 		var idx = table_slots.find(null)
 		if idx != -1:
@@ -276,8 +314,6 @@ func calculate_final_scores():
 func _load_background_textures():
 	background_textures.clear()
 	for path in bg_paths:
-		# EXPORT FIX: Removed FileAccess.file_exists check. 
-		# load() works with remapped resource paths in the exported PCK.
 		var tex = load(path)
 		if tex:
 			background_textures.append(tex)
@@ -306,7 +342,7 @@ func _create_menu_button(txt: String) -> Button:
 
 func _cycle_background():
 	if background_textures.is_empty(): 
-		_load_background_textures() # Attempt reload if empty
+		_load_background_textures() 
 	if background_textures.is_empty(): return
 	
 	current_bg_index = (current_bg_index + 1) % background_textures.size()

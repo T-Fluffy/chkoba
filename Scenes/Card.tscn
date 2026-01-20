@@ -25,3 +25,5 @@ scale = Vector2(0.44444445, 0.5)
 [node name="CardSize" type="CollisionShape2D" parent="."]
 position = Vector2(32, 47)
 shape = SubResource("RectangleShape2D_pnb5n")
+
+[node name="CardBack" type="Sprite2D" parent="."]
