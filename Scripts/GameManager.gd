@@ -1,7 +1,6 @@
 extends Node
 
 # --- Import Library ---
-# Corrected path as per user instruction
 const CardLib = preload("res://scripts/Cards/CardLibrary.gd")
 
 # --- CONSTANTS ---
@@ -34,6 +33,8 @@ var button_container: VBoxContainer
 @onready var bg_sprite: Sprite2D = $Background
 var background_textures: Array = []
 var current_bg_index: int = 0
+
+# IMPORTANT: Ensure these paths match your folder structure EXACTLY (Case-Sensitive!)
 var bg_paths = [
 	"res://assets/Background Images/Camp.jpg",
 	"res://assets/Background Images/ChangaiPixel.jpg",
@@ -41,18 +42,12 @@ var bg_paths = [
 ]
 
 func _ready():
-	# --- AUTOLOAD CONFLICT RESOLUTION ---
-	# If this node is the Autoload (child of root) but we also have a scene manager,
-	# we let the scene manager handle the game.
 	if get_parent() == get_tree().root:
-		# Check if another GameManager exists in the scene tree
 		var other_managers = get_tree().get_nodes_in_group("manager")
 		if other_managers.size() > 0:
-			print("GameManager: Autoload instance detected another manager in scene. Self-destructing.")
 			queue_free()
 			return
 	
-	# Add this instance to the group so others can find it
 	add_to_group("manager")
 
 	get_viewport().size_changed.connect(_on_window_resized)
@@ -60,13 +55,10 @@ func _ready():
 	table_slots.fill(null)
 	
 	_load_background_textures()
-	
-	# Delay UI creation to ensure everything is initialized
 	call_deferred("setup_ui")
 	_update_background_scaling()
 
 func setup_ui():
-	# Absolute cleanup of any lingering UI layers from previous attempts
 	for child in get_tree().root.get_children():
 		if child is CanvasLayer and (child.name == "GameMenu" or child.name == "MenuLayer"):
 			child.queue_free()
@@ -90,20 +82,18 @@ func setup_ui():
 	title_label.add_theme_font_size_override("font_size", 84)
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title_label.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	title_label.offset_top = 171
-	# Shift title slightly left to match requested aesthetic
-	title_label.offset_left = 86
+	title_label.offset_top = 80
+	title_label.offset_left = -50
 	title_label.offset_right = -50
 	menu_layer.add_child(title_label)
 	
-	# Score display placed below the title but shifted left
 	score_display = Label.new()
 	score_display.text = ""
 	score_display.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	score_display.add_theme_font_size_override("font_size", 36)
 	score_display.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-	score_display.offset_top = 627 # Render the final score Vertically
-	score_display.offset_left = -186 # Render the final score Horizontally
+	score_display.offset_top = 220
+	score_display.offset_left = -50 
 	menu_layer.add_child(score_display)
 	
 	button_container = VBoxContainer.new()
@@ -111,9 +101,8 @@ func setup_ui():
 	button_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
 	button_container.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	button_container.grow_vertical = Control.GROW_DIRECTION_BOTH
-	# Shift buttons down and a little to the left
 	button_container.offset_top = 50 
-	button_container.offset_left = 41
+	button_container.offset_left = -50
 	menu_layer.add_child(button_container)
 	
 	var btn_ai = _create_menu_button("PLAY VS COMPUTER")
@@ -285,12 +274,19 @@ func calculate_final_scores():
 	score_display.text = "FINAL SCORE\nPlayer: %d  |  Computer: %d" % [p_pts, c_pts]
 
 func _load_background_textures():
+	background_textures.clear()
 	for path in bg_paths:
-		if FileAccess.file_exists(path):
-			var tex = load(path)
-			if tex: background_textures.append(tex)
+		# EXPORT FIX: Removed FileAccess.file_exists check. 
+		# load() works with remapped resource paths in the exported PCK.
+		var tex = load(path)
+		if tex:
+			background_textures.append(tex)
+		else:
+			push_error("GameManager: Failed to load background: " + path)
+			
 	if not background_textures.is_empty() and bg_sprite:
 		bg_sprite.texture = background_textures[0]
+		_update_background_scaling()
 
 func count_suit(pile: Array, suit_name: String) -> int:
 	var count = 0
@@ -309,7 +305,10 @@ func _create_menu_button(txt: String) -> Button:
 	return btn
 
 func _cycle_background():
+	if background_textures.is_empty(): 
+		_load_background_textures() # Attempt reload if empty
 	if background_textures.is_empty(): return
+	
 	current_bg_index = (current_bg_index + 1) % background_textures.size()
 	bg_sprite.texture = background_textures[current_bg_index]
 	_update_background_scaling()
