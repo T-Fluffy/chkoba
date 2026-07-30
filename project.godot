@@ -24,6 +24,10 @@ GameManager="*res://scenes/GameManager.tscn"
 window/size/viewport_width=1200
 window/size/viewport_height=800
 
+[dotnet]
+
+project/assembly_name="Chkoba"
+
 [editor]
 
 version_control/plugin_name="GitPlugin"

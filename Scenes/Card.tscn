@@ -20,7 +20,7 @@ scale = Vector2(0.72000015, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(32, 47)
-scale = Vector2(0.44444445, 0.5)
+scale = Vector2(0.888, 1)
 
 [node name="CardSize" type="CollisionShape2D" parent="."]
 position = Vector2(31, 46.5)

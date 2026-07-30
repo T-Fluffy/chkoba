@@ -1,117 +1,107 @@
+# UIManager.gd
+# Main UI coordinator - manages MainMenu, ConfigMenu, and PauseMenu
+# This is the single point of contact for GameManager
+
 extends Node
 
-var menu_layer: CanvasLayer
-var title_label: Label
-var score_display: Label
-var button_container: VBoxContainer
-var bg_sprite: Sprite2D
+func _init():
+	process_mode = Node.PROCESS_MODE_ALWAYS
 
-var background_textures: Array = []
-var current_bg_index: int = 0
-var bg_paths = [
-	"res://assets/Background Images/Camp.jpg",
-	"res://assets/Background Images/ChangaiPixel.jpg",
-	"res://assets/Background Images/mountains.jpg"
-]
+# Sub-menu instances (added as children in scene)
+@onready var main_menu = $MainMenu
+@onready var config_menu = $ConfigMenu
+@onready var pause_menu = $PauseMenu
 
+# Signals (forwarded from sub-menus)
 signal start_game_requested
+signal main_menu_requested
+signal restart_game_requested
+signal quit_game_requested
+signal card_scale_changed(scale: float)
+signal background_cycle_requested
 
 func _ready():
-	# Guard against initialization if the parent GameManager is a duplicate
-	if get_parent().name == "GameManager" and get_tree().root.get_node_or_null("GameManager") != get_parent():
-		return
+	# Connect MainMenu signals
+	main_menu.start_game_requested.connect(_on_start_game_requested)
+	main_menu.quit_game_requested.connect(_on_quit_game_requested)
+	main_menu.options_requested.connect(_show_config_menu)
+	
+	# Connect ConfigMenu signals
+	config_menu.background_cycle_requested.connect(_on_background_cycle_requested)
+	config_menu.card_scale_changed.connect(_on_card_scale_changed)
+	config_menu.back_to_main_menu_requested.connect(_on_back_to_main_menu)
+	
+	# Connect PauseMenu signals
+	pause_menu.resume_requested.connect(_on_resume_requested)
+	pause_menu.main_menu_requested.connect(_on_main_menu_requested)
+	pause_menu.restart_requested.connect(_on_restart_requested)
+	pause_menu.quit_requested.connect(_on_quit_game_requested)
+	
+	# Start with main menu
+	main_menu.show_menu("CHKOBBA", "")
 
-	_load_background_textures()
-	call_deferred("setup_main_menu")
-	get_viewport().size_changed.connect(_update_background_scaling)
+# --- Public API for GameManager ---
 
-func setup_main_menu():
-	_clear_ui()
-	menu_layer = CanvasLayer.new()
-	menu_layer.layer = 100
-	add_child(menu_layer)
-	
-	var bg_overlay = ColorRect.new()
-	bg_overlay.color = Color(0, 0, 0, 0.85)
-	bg_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	bg_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
-	menu_layer.add_child(bg_overlay)
-	
-	title_label = Label.new()
-	title_label.text = "CHKOBBA"
-	title_label.add_theme_font_size_override("font_size", 84)
-	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title_label.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	title_label.offset_top = 80
-	title_label.offset_left = 90
-	title_label.offset_right = -50
-	menu_layer.add_child(title_label)
-	
-	score_display = Label.new()
-	score_display.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	score_display.add_theme_font_size_override("font_size", 36)
-	score_display.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-	score_display.offset_top = 220
-	score_display.offset_left = -187 
-	menu_layer.add_child(score_display)
-	
-	button_container = VBoxContainer.new()
-	button_container.add_theme_constant_override("separation", 20)
-	button_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	button_container.offset_top = 0.426
-	button_container.offset_left = -140
-	menu_layer.add_child(button_container)
-	
-	_add_button("PLAY VS COMPUTER", func(): emit_signal("start_game_requested"))
-	_add_button("SWITCH BACKGROUND", _cycle_background)
-	_add_button("EXIT GAME", func(): get_tree().quit())
-
-func show_game_over(p_score, c_score):
-	setup_main_menu()
-	title_label.text = "GAME OVER"
-	score_display.text = "FINAL SCORE\nPlayer: %d  |  Computer: %d" % [p_score, c_score]
+func show_game_over(player_score: int, computer_score: int):
+	main_menu.show_menu("GAME OVER", "FINAL SCORE\nPlayer: %d  |  Computer: %d" % [player_score, computer_score])
 
 func hide_menu():
-	if menu_layer: 
-		menu_layer.queue_free()
-		menu_layer = null
+	main_menu.hide_menu()
 
-func _add_button(text: String, callback: Callable):
-	var btn = Button.new()
-	btn.text = text
-	btn.custom_minimum_size = Vector2(350, 70)
-	btn.add_theme_font_size_override("font_size", 24)
-	btn.focus_mode = Control.FOCUS_NONE 
-	btn.pressed.connect(callback)
-	button_container.add_child(btn)
+func hide_main_menu():
+	main_menu.hide_menu()
 
-func _clear_ui():
-	if menu_layer: menu_layer.queue_free()
+func show_pause_icon():
+	pause_menu.show_pause_icon(self)
 
-func _load_background_textures():
-	# Use get_parent() to find Background relative to Manager
-	bg_sprite = get_parent().get_node_or_null("Background")
-	
-	background_textures.clear()
-	for path in bg_paths:
-		# EXPORT FIX: load() is the only safe way in exported builds
-		var tex = load(path)
-		if tex: background_textures.append(tex)
-		
-	if bg_sprite and !background_textures.is_empty():
-		bg_sprite.texture = background_textures[0]
-		_update_background_scaling()
+func hide_pause_icon():
+	pause_menu.hide_pause_icon()
 
-func _cycle_background():
-	if background_textures.is_empty() or !bg_sprite: return
-	current_bg_index = (current_bg_index + 1) % background_textures.size()
-	bg_sprite.texture = background_textures[current_bg_index]
-	_update_background_scaling()
+# --- Internal signal handlers ---
 
-func _update_background_scaling():
-	if !bg_sprite or !bg_sprite.texture: return
-	var view_size = get_viewport().get_visible_rect().size
-	var tex_size = bg_sprite.texture.get_size()
-	var scale_factor = max(view_size.x / tex_size.x, view_size.y / tex_size.y)
-	bg_sprite.scale = Vector2(scale_factor, scale_factor)
-	bg_sprite.position = view_size / 2
+func _on_start_game_requested():
+	emit_signal("start_game_requested")
+	main_menu.hide_menu()
+
+func _on_quit_game_requested():
+	emit_signal("quit_game_requested")
+
+func _on_background_cycle_requested():
+	emit_signal("background_cycle_requested")
+
+func _on_card_scale_changed(scale: float):
+	emit_signal("card_scale_changed", scale)
+
+func _on_back_to_main_menu():
+	config_menu.hide_config()
+	main_menu.show_menu("CHKOBBA", "")
+
+func _show_config_menu():
+	main_menu.hide_menu()
+	config_menu.show_options()
+
+func _on_resume_requested():
+	# Resume game - just unpause
+	get_tree().paused = false
+
+func _on_main_menu_requested():
+	emit_signal("main_menu_requested")
+	pause_menu.hide_pause_menu()
+	main_menu.show_menu("CHKOBBA", "")
+
+func _on_restart_requested():
+	emit_signal("restart_game_requested")
+	pause_menu.hide_pause_menu()
+
+# --- Input handling for pause menu ---
+
+func _unhandled_input(event: InputEvent):
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		if pause_menu.visible:
+			pause_menu.hide_pause_menu()
+			get_tree().paused = false
+		elif config_menu.visible:
+			config_menu.hide_config()
+			main_menu.show_menu("CHKOBBA", "")
+		else:
+			pause_menu.show_pause_menu()

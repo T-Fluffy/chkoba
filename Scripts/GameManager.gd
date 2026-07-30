@@ -19,9 +19,15 @@ var computer_chkobbas: int = 0
 var is_player_turn: bool = true 
 var game_active: bool = false
 var texture_cache: Dictionary = {}
+var current_card_scale: float = 1.0
 
 # --- Components ---
-@onready var ui_manager = $UIManager 
+@onready var ui_manager = $UIManager
+@onready var background = $Background
+
+# --- Background ---
+var background_textures: Array = []
+var current_bg_index: int = 0
 
 # --- Debug ---
 @export var debug_show_ai_cards: bool = false:
@@ -39,14 +45,25 @@ func _ready():
 	table_slots.resize(MAX_TABLE_SLOTS)
 	table_slots.fill(null)
 	
+	_load_backgrounds()
+	if background and background_textures.size() > 0:
+		background.texture = background_textures[0]
+		_update_background_scale()
+	
 	if ui_manager:
 		ui_manager.start_game_requested.connect(start_game)
+		ui_manager.main_menu_requested.connect(_on_main_menu_requested)
+		ui_manager.restart_game_requested.connect(restart_game)
+		ui_manager.quit_game_requested.connect(_on_quit_game_requested)
+		ui_manager.card_scale_changed.connect(_on_card_scale_changed)
+		ui_manager.background_cycle_requested.connect(_cycle_background)
 	
 	get_viewport().size_changed.connect(_on_window_resized)
 
 func start_game():
 	if ui_manager:
 		ui_manager.hide_menu()
+		ui_manager.show_pause_icon()
 	
 	clear_board() 
 	preload_all_textures()
@@ -82,6 +99,9 @@ func deal_round():
 func spawn_card(card_data: Dictionary, slot_index: int, target: String):
 	var card = CARD_SCENE.instantiate()
 	add_child(card)
+	
+	# Apply current card scale
+	card.scale = Vector2(current_card_scale, current_card_scale)
 	
 	var vs = get_viewport().get_visible_rect().size
 	card.position = Vector2(vs.x - 100, vs.y - 100)
@@ -221,6 +241,7 @@ func end_game():
 	game_active = false
 	# Scores are usually calculated based on piles at the end
 	if ui_manager:
+		ui_manager.hide_pause_icon()
 		ui_manager.show_game_over(player_chkobbas, computer_chkobbas)
 
 func get_active_table_cards() -> Array:
@@ -237,7 +258,7 @@ func check_round_end():
 		get_tree().create_timer(0.8).timeout.connect(deal_round)
 
 func clear_board():
-	for card in get_tree().get_nodes_in_group("cards"): card.queue_free()
+	for card in get_tree().get_nodes_in_group("Cards"): card.queue_free()
 	player_hand.clear(); computer_hand.clear(); table_slots.fill(null)
 	player_captured_pile.clear(); computer_captured_pile.clear()
 	player_chkobbas = 0; computer_chkobbas = 0
@@ -269,8 +290,66 @@ func get_table_position(i: int) -> Vector2:
 	@warning_ignore("integer_division")
 	return Vector2(start_x + (i % 5) * sx, (vs.y / 2) - (sy / 2) + (i / 5) * sy)
 
+func _update_background_scale():
+	if not background or not background.texture:
+		return
+	var vs = get_viewport().get_visible_rect().size
+	var tex_size = background.texture.get_size()
+	var s = max(vs.x / tex_size.x, vs.y / tex_size.y)
+	background.scale = Vector2(s, s)
+	background.position = vs / 2
+
 func _on_window_resized():
 	update_hand_visuals()
+	_update_background_scale()
 	for i in range(table_slots.size()): 
 		if table_slots[i]:
 			table_slots[i].position = get_table_position(i)
+
+func _on_main_menu_requested():
+	game_active = false
+	clear_board()
+	if ui_manager:
+		ui_manager.hide_pause_icon()
+		ui_manager.hide_menu()
+
+func restart_game():
+	start_game()
+
+func _on_quit_game_requested():
+	get_tree().quit()
+
+func _load_backgrounds():
+	var bg_dir = "res://assets/Background Images/"
+	var dir = DirAccess.open(bg_dir)
+	if dir:
+		for file in dir.get_files():
+			var ext = file.get_extension().to_lower()
+			if ext in ["png", "jpg", "jpeg", "webp"]:
+				var tex = load(bg_dir + file)
+				if tex:
+					background_textures.append(tex)
+
+func _cycle_background():
+	if background_textures.is_empty():
+		return
+	current_bg_index = (current_bg_index + 1) % background_textures.size()
+	if background:
+		background.texture = background_textures[current_bg_index]
+		_update_background_scale()
+
+func _on_card_scale_changed(scale: float):
+	current_card_scale = scale
+	_apply_card_scale_to_all()
+
+func _apply_card_scale_to_all():
+	var scale_vec = Vector2(current_card_scale, current_card_scale)
+	for card in player_hand:
+		if is_instance_valid(card):
+			card.scale = scale_vec
+	for card in computer_hand:
+		if is_instance_valid(card):
+			card.scale = scale_vec
+	for slot in table_slots:
+		if is_instance_valid(slot):
+			slot.scale = scale_vec
