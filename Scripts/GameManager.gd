@@ -24,6 +24,12 @@ var current_card_scale: float = 1.0
 # --- Components ---
 @onready var ui_manager = $UIManager
 @onready var background = $Background
+@onready var network_manager = $NetworkManager
+
+# --- Multiplayer ---
+var is_multiplayer: bool = false
+var is_remote_turn: bool = false
+var remote_player_id: int = 0
 
 # --- Background ---
 var background_textures: Array = []
@@ -57,10 +63,12 @@ func _ready():
 		ui_manager.quit_game_requested.connect(_on_quit_game_requested)
 		ui_manager.card_scale_changed.connect(_on_card_scale_changed)
 		ui_manager.background_cycle_requested.connect(_cycle_background)
+		ui_manager.multiplayer_game_requested.connect(start_multiplayer_game)
 	
 	get_viewport().size_changed.connect(_on_window_resized)
 
 func start_game():
+	is_multiplayer = false
 	if ui_manager:
 		ui_manager.hide_menu()
 		ui_manager.show_pause_icon()
@@ -79,6 +87,142 @@ func start_game():
 	deal_round()
 	game_active = true
 	is_player_turn = true
+
+# --- Multiplayer Game ---
+
+func start_multiplayer_game():
+	if not network_manager.is_host:
+		return
+	is_multiplayer = true
+	is_remote_turn = false
+	var peers = multiplayer.get_peers()
+	if peers.is_empty():
+		return
+	remote_player_id = peers[0]
+	
+	if ui_manager:
+		ui_manager.hide_menu()
+		ui_manager.show_pause_icon()
+	
+	clear_board()
+	preload_all_textures()
+	
+	deck = CardLib.create_deck()
+	deck.shuffle()
+	
+	for i in range(4):
+		spawn_card(deck.pop_back(), i, "table")
+	
+	for i in range(3):
+		if !deck.is_empty():
+			spawn_card(deck.pop_back(), i, "player")
+		if !deck.is_empty():
+			spawn_card(deck.pop_back(), i, "computer")
+	
+	update_hand_visuals()
+	_hide_side_hand()
+	
+	_sync_initial_state.rpc(_serialize_state())
+	
+	game_active = true
+	is_player_turn = true
+
+func _serialize_state() -> Dictionary:
+	var table = []
+	for i in range(MAX_TABLE_SLOTS):
+		if table_slots[i]:
+			var c = table_slots[i]
+			table.append({"rank": c.rank, "suit": c.suit, "value": c.value})
+		else:
+			table.append(null)
+	var hand = []
+	for c in player_hand:
+		hand.append({"rank": c.rank, "suit": c.suit, "value": c.value})
+	return {"table": table, "hand": hand, "player_score": player_chkobbas, "opponent_score": computer_chkobbas}
+
+func _hide_side_hand():
+	for c in computer_hand:
+		if c.has_method("show_back"):
+			c.show_back()
+
+@rpc("authority", "call_remote", "reliable")
+func _sync_initial_state(state: Dictionary):
+	is_multiplayer = true
+	is_remote_turn = false
+	remote_player_id = 1
+	clear_board()
+	preload_all_textures()
+	
+	for i in range(MAX_TABLE_SLOTS):
+		var data = state["table"][i]
+		if data:
+			var d = {"rank": data.rank, "suit": data.suit, "value": data.value}
+			spawn_card(d, i, "table")
+	
+	for c in state["hand"]:
+		var card = CARD_SCENE.instantiate()
+		card.scale = Vector2(current_card_scale, current_card_scale)
+		add_child(card)
+		var tex = texture_cache.get("%s_%s" % [c.rank, c.suit])
+		card.setup_card(c.rank, c.suit, c.value, tex)
+		card.is_held_by_player = true
+		player_hand.append(card)
+		if !card.card_played.is_connected(_on_card_played):
+			card.card_played.connect(_on_card_played)
+	
+	player_chkobbas = state.get("player_score", 0)
+	computer_chkobbas = state.get("opponent_score", 0)
+	update_hand_visuals()
+	
+	if ui_manager:
+		ui_manager.hide_menu()
+		ui_manager.show_pause_icon()
+	game_active = true
+	is_player_turn = false
+
+@rpc("any_peer", "call_remote", "reliable")
+func _submit_play(rank: String, suit: String, value: int):
+	if not is_multiplayer or not network_manager.is_host:
+		return
+	var card = null
+	for c in computer_hand:
+		if c.rank == rank and c.suit == suit:
+			card = c
+			break
+	if not card:
+		return
+	computer_hand.erase(card)
+	update_hand_visuals()
+	card.modulate = Color.WHITE
+	card.show_face()
+	var captured = ChkobbaBrain.find_best_capture(get_active_table_cards(), value)
+	if captured.is_empty():
+		play_to_table(card)
+	else:
+		process_capture(card, captured, false)
+	is_player_turn = true
+	check_round_end()
+
+func _multiplayer_play_card(card):
+	if not is_multiplayer or is_remote_turn:
+		return
+	player_hand.erase(card)
+	update_hand_visuals()
+	var captured = ChkobbaBrain.find_best_capture(get_active_table_cards(), card.value)
+	if captured.is_empty():
+		play_to_table(card)
+	else:
+		process_capture(card, captured, true)
+	is_player_turn = false
+	check_round_end()
+	if game_active:
+		_request_remote_play.rpc()
+
+@rpc("authority", "call_remote", "reliable")
+func _request_remote_play():
+	if not is_multiplayer:
+		return
+	is_remote_turn = true
 
 func deal_round():
 	if deck.is_empty() and player_hand.is_empty() and computer_hand.is_empty():
@@ -126,10 +270,22 @@ func spawn_card(card_data: Dictionary, slot_index: int, target: String):
 				card.animate_to(get_table_position(slot_index), randf_range(-5, 5))
 
 func _on_card_played(card):
-	if not is_player_turn: return 
+	if is_multiplayer:
+		if (network_manager.is_host and not is_player_turn) or (not network_manager.is_host and not is_remote_turn):
+			return
+	elif not is_player_turn:
+		return
+	if is_multiplayer:
+		if network_manager.is_host:
+			_multiplayer_play_card(card)
+		else:
+			var c = card
+			_submit_play.rpc_id(remote_player_id, c.rank, c.suit, c.value)
+			player_hand.erase(card)
+			card.queue_free()
+			update_hand_visuals()
+		return
 	
-	# --- FIX: CALL CHKOBBABRAIN DIRECTLY ---
-	# We assume ChkobbaBrain is an Autoload (Singleton)
 	var captured = ChkobbaBrain.find_best_capture(get_active_table_cards(), card.value)
 	
 	player_hand.erase(card)

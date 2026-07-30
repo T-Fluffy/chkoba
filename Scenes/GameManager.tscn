@@ -1,15 +1,20 @@
-[gd_scene load_steps=6 format=3 uid="uid://dimqt6t3qwsr0"]
+[gd_scene load_steps=8 format=3 uid="uid://dimqt6t3qwsr0"]
 
 [ext_resource type="Script" uid="uid://mlwxsx71757b" path="res://scripts/GameManager.gd" id="1_34tde"]
 [ext_resource type="Script" uid="uid://dut51wdvhaal5" path="res://scripts/Managers/UIManager.gd" id="2_qppyr"]
 [ext_resource type="Script" path="res://scripts/Managers/MainMenu.gd" id="3_abcde"]
 [ext_resource type="Script" path="res://scripts/Managers/ConfigMenu.gd" id="4_fghij"]
 [ext_resource type="Script" path="res://scripts/Managers/PauseMenu.gd" id="5_klmno"]
+[ext_resource type="Script" path="res://scripts/Managers/NetworkManager.gd" id="6_network"]
+[ext_resource type="Script" path="res://scripts/Managers/NetworkMenu.gd" id="7_netmenu"]
 
 [node name="GameManager" type="Node2D"]
 script = ExtResource("1_34tde")
 
 [node name="Background" type="Sprite2D" parent="."]
+
+[node name="NetworkManager" type="Node" parent="."]
+script = ExtResource("6_network")
 
 [node name="UIManager" type="Node" parent="."]
 script = ExtResource("2_qppyr")
@@ -25,3 +30,7 @@ layer = 100
 [node name="PauseMenu" type="CanvasLayer" parent="UIManager"]
 script = ExtResource("5_klmno")
 layer = 200
+
+[node name="NetworkMenu" type="CanvasLayer" parent="UIManager"]
+script = ExtResource("7_netmenu")
+layer = 150

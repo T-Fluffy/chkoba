@@ -11,6 +11,7 @@ var bg_overlay: ColorRect
 signal start_game_requested
 signal quit_game_requested
 signal options_requested
+signal one_vs_one_requested
 
 func show_menu(title_text: String = "CHKOBBA", score_text: String = ""):
 	visible = true
@@ -60,6 +61,7 @@ func _setup_ui(title_text: String, score_text: String):
 	add_child(button_container)
 	
 	_add_button("PLAY VS COMPUTER", func(): emit_signal("start_game_requested"))
+	_add_button("1 VS 1", func(): emit_signal("one_vs_one_requested"))
 	_add_button("OPTIONS", func(): emit_signal("options_requested"))
 	_add_button("EXIT GAME", func(): emit_signal("quit_game_requested"))
 
