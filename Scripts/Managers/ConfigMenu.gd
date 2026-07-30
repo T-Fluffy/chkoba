@@ -51,6 +51,7 @@ func build_options_menu():
 	
 	_add_button("SWITCH BACKGROUND", func(): emit_signal("background_cycle_requested"), button_container)
 	_add_button("CARD SIZE", func(): show_card_size(), button_container)
+	_add_checkbox("SHOW AI CARDS", _get_show_ai_cards(), _on_show_ai_cards_toggled, button_container)
 	_add_button("BACK", func(): emit_signal("back_to_main_menu_requested"), button_container)
 
 func build_card_size_menu():
@@ -141,3 +142,21 @@ func _add_button(text: String, callback: Callable, container: VBoxContainer):
 	btn.focus_mode = Control.FOCUS_NONE
 	btn.pressed.connect(callback)
 	container.add_child(btn)
+
+func _add_checkbox(text: String, initial: bool, callback: Callable, container: VBoxContainer):
+	var cb = CheckBox.new()
+	cb.text = text
+	cb.button_pressed = initial
+	cb.custom_minimum_size = Vector2(350, 70)
+	cb.add_theme_font_size_override("font_size", 24)
+	cb.toggled.connect(callback)
+	container.add_child(cb)
+
+func _get_show_ai_cards() -> bool:
+	var gm = get_node_or_null("/root/GameManager")
+	return gm.debug_show_ai_cards if gm else false
+
+func _on_show_ai_cards_toggled(visible: bool):
+	var gm = get_node_or_null("/root/GameManager")
+	if gm:
+		gm.debug_show_ai_cards = visible
