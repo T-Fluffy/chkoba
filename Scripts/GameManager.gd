@@ -547,21 +547,21 @@ func end_game():
 		_sync_match_score.rpc(score, player_match_score, computer_match_score, finished)
 		if finished:
 			if ui_manager:
-				ui_manager.show_game_over("GAME OVER", _build_score_text(score, player_match_score, computer_match_score, manche_number, true))
+				ui_manager.show_game_over("GAME OVER", _build_score_data(score, player_match_score, computer_match_score, manche_number, true))
 		else:
 			waiting_for_next_manche = true
 			if ui_manager:
-				ui_manager.show_game_over("MANCHE COMPLETE", _build_score_text(score, player_match_score, computer_match_score, manche_number, false))
+				ui_manager.show_game_over("MANCHE COMPLETE", _build_score_data(score, player_match_score, computer_match_score, manche_number, false))
 			get_tree().create_timer(2.5).timeout.connect(_start_mp_manche)
 		return
 	
 	if finished:
 		if ui_manager:
-			ui_manager.show_game_over("GAME OVER", _build_score_text(score, player_match_score, computer_match_score, manche_number, true))
+			ui_manager.show_game_over("GAME OVER", _build_score_data(score, player_match_score, computer_match_score, manche_number, true))
 	else:
 		waiting_for_next_manche = true
 		if ui_manager:
-			ui_manager.show_game_over("MANCHE COMPLETE", _build_score_text(score, player_match_score, computer_match_score, manche_number, false))
+			ui_manager.show_game_over("MANCHE COMPLETE", _build_score_data(score, player_match_score, computer_match_score, manche_number, false))
 
 @rpc("authority", "call_remote", "reliable")
 func _sync_match_score(score: Dictionary, p_match: int, c_match: int, finished: bool):
@@ -573,10 +573,10 @@ func _sync_match_score(score: Dictionary, p_match: int, c_match: int, finished: 
 	if finished:
 		clear_board()
 		if ui_manager:
-			ui_manager.show_game_over("GAME OVER", _build_score_text(score, player_match_score, computer_match_score, manche_number, true))
+			ui_manager.show_game_over("GAME OVER", _build_score_data(score, player_match_score, computer_match_score, manche_number, true))
 	else:
 		if ui_manager:
-			ui_manager.show_game_over("MANCHE COMPLETE", _build_score_text(score, player_match_score, computer_match_score, manche_number, false))
+			ui_manager.show_game_over("MANCHE COMPLETE", _build_score_data(score, player_match_score, computer_match_score, manche_number, false))
 
 func _transfer_leftover_table_cards():
 	var pile = player_captured_pile if last_capture_player else computer_captured_pile
@@ -587,29 +587,23 @@ func _transfer_leftover_table_cards():
 				table_slots[i].queue_free()
 			table_slots[i] = null
 
-func _build_score_text(score: Dictionary, p_match: int, c_match: int, manche: int, finished: bool) -> String:
-	var lines = []
-	lines.append("Manche %d" % manche)
-	lines.append("KARTA    : %s" % _category_label(score["karta"]))
-	lines.append("DINARI   : %s" % _category_label(score["dinari"]))
-	lines.append("BARMILA  : %s" % _category_label(score["barmila"]))
-	lines.append("SAB'A    : %s" % _category_label(score["sabaa"]))
-	var chk = score["chkobba"]
-	lines.append("CHKOBBA  : Player %d - Computer %d" % [chk["player"], chk["computer"]])
-	lines.append("")
-	lines.append("Match    : Player %d - Computer %d" % [p_match, c_match])
-	if finished:
-		lines.append("Target   : %d" % TARGET_SCORE)
-	return "\n".join(lines)
-
-func _category_label(who) -> String:
-	match who:
-		"player":
-			return "Player"
-		"computer":
-			return "Computer"
-		_:
-			return "Baji (tie)"
+func _build_score_data(score: Dictionary, p_match: int, c_match: int, manche: int, finished: bool) -> Dictionary:
+	return {
+		"manche": manche,
+		"finished": finished,
+		"p_match": p_match,
+		"c_match": c_match,
+		"target": TARGET_SCORE,
+		"player_label": "You",
+		"computer_label": "Opponent",
+		"chkobba": score["chkobba"],
+		"categories": [
+			{"name": "KARTA", "winner": score["karta"]},
+			{"name": "DINARI", "winner": score["dinari"]},
+			{"name": "BARMILA", "winner": score["barmila"]},
+			{"name": "SAB'A", "winner": score["sabaa"]},
+		],
+	}
 
 func get_active_table_cards() -> Array:
 	var active = []

@@ -45,9 +45,9 @@ func _add_title(text: String) -> Label:
 	label.add_theme_font_size_override("font_size", 64)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	label.offset_top = 100
-	label.offset_left = 90
-	label.offset_right = -50
+	label.offset_top = 110
+	label.offset_left = 80
+	label.offset_right = -80
 	add_child(label)
 	return label
 

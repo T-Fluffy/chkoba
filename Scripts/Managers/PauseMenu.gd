@@ -31,9 +31,9 @@ func build_ui():
 	title_label.add_theme_font_size_override("font_size", 64)
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title_label.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	title_label.offset_top = 100
-	title_label.offset_left = 90
-	title_label.offset_right = -50
+	title_label.offset_top = 110
+	title_label.offset_left = 80
+	title_label.offset_right = -80
 	title_label.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(title_label)
 	

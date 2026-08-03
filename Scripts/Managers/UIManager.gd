@@ -28,6 +28,7 @@ func _ready():
 	main_menu.quit_game_requested.connect(_on_quit_game_requested)
 	main_menu.options_requested.connect(_show_config_menu)
 	main_menu.one_vs_one_requested.connect(_show_network_menu)
+	main_menu.main_menu_requested.connect(_on_main_menu_requested)
 	
 	# Connect ConfigMenu signals
 	config_menu.background_cycle_requested.connect(_on_background_cycle_requested)
@@ -45,12 +46,12 @@ func _ready():
 	pause_menu.quit_requested.connect(_on_quit_game_requested)
 	
 	# Start with main menu
-	main_menu.show_menu("CHKOBBA", "")
+	main_menu.show_menu("CHKOBBA")
 
 # --- Public API for GameManager ---
 
-func show_game_over(title_text: String, body_text: String):
-	main_menu.show_menu(title_text, body_text)
+func show_game_over(title_text: String, score_data: Dictionary):
+	main_menu.show_menu(title_text, score_data)
 
 func hide_menu():
 	main_menu.hide_menu()
@@ -81,7 +82,7 @@ func _on_card_scale_changed(scale: float):
 
 func _on_back_to_main_menu():
 	config_menu.hide_config()
-	main_menu.show_menu("CHKOBBA", "")
+	main_menu.show_menu("CHKOBBA")
 
 func _show_config_menu():
 	main_menu.hide_menu()
@@ -95,7 +96,7 @@ func _on_network_back_to_main():
 	network_menu.hide_menu()
 	var net = get_node("/root/GameManager/NetworkManager")
 	if net: net.disconnect_peer()
-	main_menu.show_menu("CHKOBBA", "")
+	main_menu.show_menu("CHKOBBA")
 
 func _on_network_game_start():
 	emit_signal("multiplayer_game_requested")
@@ -108,7 +109,7 @@ func _on_resume_requested():
 func _on_main_menu_requested():
 	emit_signal("main_menu_requested")
 	pause_menu.hide_pause_menu()
-	main_menu.show_menu("CHKOBBA", "")
+	main_menu.show_menu("CHKOBBA")
 
 func _on_restart_requested():
 	emit_signal("restart_game_requested")
@@ -123,7 +124,7 @@ func _unhandled_input(event: InputEvent):
 			get_tree().paused = false
 		elif config_menu.visible:
 			config_menu.hide_config()
-			main_menu.show_menu("CHKOBBA", "")
+			main_menu.show_menu("CHKOBBA")
 		elif network_menu.visible:
 			_on_network_back_to_main()
 		else:
