@@ -49,8 +49,8 @@ func _ready():
 
 # --- Public API for GameManager ---
 
-func show_game_over(player_score: int, computer_score: int):
-	main_menu.show_menu("GAME OVER", "FINAL SCORE\nPlayer: %d  |  Computer: %d" % [player_score, computer_score])
+func show_game_over(title_text: String, body_text: String):
+	main_menu.show_menu(title_text, body_text)
 
 func hide_menu():
 	main_menu.hide_menu()

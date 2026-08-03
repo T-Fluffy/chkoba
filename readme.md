@@ -1,81 +1,89 @@
-# 🃏 Chkobba (Scopa) Card Game Project: Comprehensive Presentation
+# 🃏 Chkobba (شكبّة) Card Game Project: Presentation
 
 ## 🌟 Project Overview
 
-This project is a digital implementation of Chkobba (also known as Scopa), a highly strategic and traditional Mediterranean fishing card game for two players. The primary goal is to capture face-up cards from a central playing area, earning points not just for the quantity of cards captured, but also for specific combinations and 'sweeps.'
+A digital implementation of **Chkobba** (Arabic: شكبّة / škkubba, sometimes written "Chkobba"), a traditional
+Mediterranean *fishing* card game for two players famously played in Tunisia. The goal is to capture face-up
+cards from a central playing area, earning points not just for the quantity of captured cards but also for
+specific combinations and for *chkobba* (sweeps). Play continues over several *manches* until one player
+reaches the target score (default **21**; 11 and 31 are also commonly used).
 
-We are using an expanded 48-card deck (A-K in 4 suits) for this digital version, which simplifies mapping to standard international playing cards and increases the strategic options compared to the traditional 40-card Italian deck.
+This version uses the **traditional 40-card deck** (4 suits × 10 cards), with the Tunisian ranks mapped onto
+standard international card faces for rendering.
 
 ## 🚀 Core Gameplay Mechanics
 
-The game is played in multiple deals (rounds) until the entire deck is exhausted. Players are dealt three cards each round, and four cards are initially placed face-up on the table.
+A *manche* is played over 6 rounds (deals). Each round both players are dealt 3 cards; 4 cards are initially
+placed face-up on the table. Play resumes after each round with the player whose turn it is.
 
 ### The Two Ways to Capture Cards
 
 A player captures cards by playing a card from their hand onto the table. There are two capture methods:
 
-1. Matching by Rank (Preferred):
-
+1. **Capture by value (manger / أكل):**
    - The played card must match the exact value of a single card on the table.
+   - Example: playing a **7** captures the **7** on the table.
 
-   - Example: Playing a King (Value 13) captures the King (Value 13) on the table.
-
-2. Matching by Sum:
-
+2. **Capture by sum:**
    - The played card's value must equal the sum of two or more cards on the table.
+   - Example: playing a **K (10)** captures a **6** and a **4**.
 
-   - Example: Playing a 10 (Value 10) captures a 6 (Value 6) and a 4 (Value 4) from the table.
-
-> Priority Rule (Crucial):
+> **Priority rule (crucial):**
 >
-> If a player can capture cards using both the Matching by Rank method (single card) AND the Matching by Sum method (multiple cards), the player MUST choose the single card match. This rule adds a significant layer of forced strategy.
+> If a played card can capture by direct *value match* (single card) **and** by sum, the player **must**
+> choose the single-card match. This is enforced automatically by the game.
 
->Non-Capture Moves
->
->If a played card cannot make any valid capture, it is simply added to the central playing area, becoming available for future captures.
+> **Non-capture moves:**
+> A card that cannot capture is simply added to the table, becoming available for future captures.
 
->Chkobba / Scopa (The Sweep)
->
->A Chkobba (or Scopa) is achieved when a player successfully captures all cards currently on the table with a single move. This immediately earns the player 1 point on the score tracker, and the captured cards are placed in their score pile.
+> **Chkobba (the sweep):**
+> Clearing **all** cards from the table with a single move earns a **chkobba** worth 1 point.
+> A chkobba is **not** awarded on the very last move of a manche.
 
-## 🔢 Card Value System (48-Card Deck)
+> **Initial re-deal:**
+> If the 4 initial table cards contain 3 of the same value, the table is re-dealt so the game never
+> starts with an un-capturable ("imprenable") configuration.
 
-For capture and summing purposes, the 48-card deck uses a consistent numerical value sequence:
+## 🔢 Card Value System (40-card Deck)
 
-| Card Rank    | Chkobba Capture Value | Notes                            |
-| ---------    | --------------------- | -----------------------          |
-| Ace (A)      | 1                     | Lowest numerical value.          |
-| 2 through 10 | 2 through 10          | Face value matches capture value.|
-| Jack (J)     | 11                    | First face card.                 |
-| Queen (Q)    | 12                    | Second face card.                |
-| King (K)     | 13                    | Highest numerical value.         |
+| Tunisian rank          | Rendered rank | Capture value |
+| ---------------------- | ------------- | ------------- |
+| L'as (l'āṣ), "1"       | A             | 1             |
+| 2 – 7                  | 2 – 7         | face value    |
+| Dame (مجيرة)           | Q             | 8             |
+| Fante / Valet (كوال)   | J             | 9             |
+| Roi (راي)               | K             | 10            |
 
-## 🏆 Scoring Highlights (Points at End of Game)
+Diamonds are called **Dīnārī (ديناري)**.
 
-After the deck is played through and all remaining table cards are assigned to the last player to capture, the round ends. Points are then calculated based on the cards in each player's capture pile.
+## 🏆 Scoring (manche end)
 
-| Scoring Category     | Point Value | Description                                                                          |
-| ----------------     | ----------- | -----------                                                                          |
-| Most Cards           | 1 Point     | Awarded to the player who captured the majority of the 48 cards (25 or more).        |
-| Most Diamonds        | 1 Point     | Awarded to the player who captured the majority of the 12 Diamond cards (7 or more). |
-| The Seven of Diamonds| 1 Point     | Awarded to the player who captured the actual 7 of Diamonds.                         |
-| Highest Primiera     | 1 Point     | Awarded to the player whose best four cards (one from each suit) yield the highest specific Primiera score. (The Primiera score is calculated using special high-value cards, e.g., 7s are worth 21, 6s are worth 18, Aces are worth 16, etc.) |
-| Chkobba (Sweeps)     | 1 Point per sweep  | Awarded for every time a player cleared the table during the game. |
+After the deck is exhausted, the remaining table cards are given to the **player who made the last capture**
+(last pli winner). Points are then computed per category. On a tie in a category neither player scores
+(**bājī** — the point is void).
 
-The total score for the game is the sum of all these category points plus the Chkobba points.
+| Category      | Arabic / Term    | Points | How it is won                          |
+| ------------- | ---------------- | ------ | -------------------------------------- |
+| **Most cards**| Kārta (كارطة)    | 1      | Captured the majority of the 40 cards. |
+| **Most diamonds** | Dīnārī (ديناري) | 1      | Captured the most diamonds (of 10).    |
+| **Barmīla**   | Barmīla (برميلة) | 1      | Most **7s**; tie → most **6s**; else bājī. |
+| **Seven of diamonds** | Sabʿa l-ḥayya (سبعة الحية) | 1 | Owns the **7 of diamonds**. |
+| **Chkobba**   | Chkobba (شكبّة)  | 1 each | Each sweep of the table during the manche. |
+
+> Sabʿa l-ḥayya (سبعة الحية, "the living seven") — the **7 of diamonds** is the **only card** that scores by
+> itself in classic Chkobba.
+
+The winner is the first player to reach the target score (default 21). A value of 11 or 31 is also commonly
+used.
 
 ## 🛠️ Project Status
 
-Current components implemented:
+Implemented:
 
-* Complete deck generation (48 cards) and value assignment (1-13).
-
-* Robust shuffling algorithm.
-
-* Initial dealing mechanism for the table and player hands.
-
-* Basic UI structure and card rendering.
-
-## Next Steps:
-
-The immediate focus is to fully implement the capture logic within the handleCardPlay function, addressing both rank matching and sum matching, while strictly enforcing the Priority Rule.
+- Traditional **40-card deck** generation with authentic values (1, 2–7, Q=8, J=9, K=10).
+- Robust shuffling, initial table deal with three-of-a-kind re-deal rule.
+- Capture logic: direct value match (forced priority) and subset checksum.
+- **Chkobba (sweep)** detection, with the last-move exclusion rule.
+- End-of-manche scoring: **Kārta, Dīnārī, Barmīla, Sabʿa l-ḥayya, chkobba**, with bājī ties.
+- Multi-manche matches to a configurable target score.
+- Single-player vs AI, and network **1vs1** (ENet) with host-authoritative scoring.
