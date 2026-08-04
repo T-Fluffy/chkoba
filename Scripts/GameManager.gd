@@ -40,6 +40,12 @@ var is_remote_turn: bool = false
 var remote_player_id: int = 0
 
 # --- Background ---
+# Static list (DirAccess cannot enumerate res:// inside an exported PCK).
+const BACKGROUND_PATHS := [
+	"res://assets/Background Images/Camp.jpg",
+	"res://assets/Background Images/ChangaiPixel.jpg",
+	"res://assets/Background Images/mountains.jpg",
+]
 var background_textures: Array = []
 var current_bg_index: int = 0
 
@@ -688,15 +694,11 @@ func _on_quit_game_requested():
 	get_tree().quit()
 
 func _load_backgrounds():
-	var bg_dir = "res://assets/Background Images/"
-	var dir = DirAccess.open(bg_dir)
-	if dir:
-		for file in dir.get_files():
-			var ext = file.get_extension().to_lower()
-			if ext in ["png", "jpg", "jpeg", "webp"]:
-				var tex = load(bg_dir + file)
-				if tex:
-					background_textures.append(tex)
+	background_textures.clear()
+	for path in BACKGROUND_PATHS:
+		var tex = load(path)
+		if tex:
+			background_textures.append(tex)
 
 func _cycle_background():
 	if background_textures.is_empty():

@@ -27,6 +27,10 @@ layer = 100
 script = ExtResource("4_fghij")
 layer = 100
 
+[node name="PauseOptionsMenu" type="CanvasLayer" parent="UIManager"]
+script = ExtResource("4_fghij")
+layer = 200
+
 [node name="PauseMenu" type="CanvasLayer" parent="UIManager"]
 script = ExtResource("5_klmno")
 layer = 200

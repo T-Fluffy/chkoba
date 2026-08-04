@@ -2,21 +2,31 @@ extends CanvasLayer
 
 signal background_cycle_requested
 signal card_scale_changed(scale: float)
-signal back_to_main_menu_requested
+# Neutral "back" signal: the menu does not decide the destination, the
+# wiring in UIManager does (main-menu instance vs pause-menu instance).
+signal back_requested
 
 var current_menu: String = "options"
 var card_scale_factor: float = 1.0
 
+func _get_shared_card_scale() -> float:
+	var gm = get_node_or_null("/root/GameManager")
+	return gm.current_card_scale if gm else 1.0
+
 func _ready():
 	self.layer = 100
+	# Keep working while the game is paused (opened from pause menu).
+	process_mode = Node.PROCESS_MODE_ALWAYS
 
 func show_options():
 	current_menu = "options"
+	card_scale_factor = _get_shared_card_scale()
 	visible = true
 	build_options_menu()
 
 func show_card_size():
 	current_menu = "card_size"
+	card_scale_factor = _get_shared_card_scale()
 	visible = true
 	build_card_size_menu()
 
@@ -33,26 +43,34 @@ func build_options_menu():
 	bg_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(bg_overlay)
 	
+	# Centered column with equal margins on all edges (mobile-friendly).
+	var col = VBoxContainer.new()
+	col.add_theme_constant_override("separation", 40)
+	col.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	col.offset_top = 90
+	col.offset_bottom = -90
+	col.offset_left = 100
+	col.offset_right = -100
+	col.alignment = BoxContainer.ALIGNMENT_CENTER
+	add_child(col)
+	
 	var title_label = Label.new()
 	title_label.text = "OPTIONS"
 	title_label.add_theme_font_size_override("font_size", 64)
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title_label.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	title_label.offset_top = 110
-	title_label.offset_left = 80
-	title_label.offset_right = -80
-	add_child(title_label)
+	title_label.custom_minimum_size = Vector2(350, 0)
+	title_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	col.add_child(title_label)
 	
 	var button_container = VBoxContainer.new()
 	button_container.add_theme_constant_override("separation", 20)
-	button_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	button_container.offset_left = -140
-	add_child(button_container)
+	button_container.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	col.add_child(button_container)
 	
 	_add_button("SWITCH BACKGROUND", func(): emit_signal("background_cycle_requested"), button_container)
 	_add_button("CARD SIZE", func(): show_card_size(), button_container)
 	_add_checkbox("SHOW AI CARDS", _get_show_ai_cards(), _on_show_ai_cards_toggled, button_container)
-	_add_button("BACK", func(): emit_signal("back_to_main_menu_requested"), button_container)
+	_add_button("BACK", func(): emit_signal("back_requested"), button_container)
 
 func build_card_size_menu():
 	_clear_ui()
@@ -117,8 +135,8 @@ func build_card_size_menu():
 	plus_btn.pressed.connect(func(): _adjust_card_size(0.1, size_label))
 	slider_row.add_child(plus_btn)
 	
-	# Return button to main menu
-	_add_button("MAIN MENU", func(): emit_signal("back_to_main_menu_requested"), stack)
+	# Return button that goes back to the options menu (context preserved).
+	_add_button("BACK", func(): show_options(), stack)
 
 func _adjust_card_size(delta: float, label: Label):
 	card_scale_factor = clamp(card_scale_factor + delta, 0.5, 2.0)
@@ -140,6 +158,7 @@ func _add_button(text: String, callback: Callable, container: VBoxContainer):
 	btn.custom_minimum_size = Vector2(350, 70)
 	btn.add_theme_font_size_override("font_size", 24)
 	btn.focus_mode = Control.FOCUS_NONE
+	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	btn.pressed.connect(callback)
 	container.add_child(btn)
 
@@ -149,6 +168,7 @@ func _add_checkbox(text: String, initial: bool, callback: Callable, container: V
 	cb.button_pressed = initial
 	cb.custom_minimum_size = Vector2(350, 70)
 	cb.add_theme_font_size_override("font_size", 24)
+	cb.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	cb.toggled.connect(callback)
 	container.add_child(cb)
 

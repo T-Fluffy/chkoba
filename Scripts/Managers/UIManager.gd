@@ -12,6 +12,7 @@ func _init():
 @onready var config_menu = $ConfigMenu
 @onready var pause_menu = $PauseMenu
 @onready var network_menu = $NetworkMenu
+@onready var pause_options = $PauseOptionsMenu
 
 # Signals (forwarded from sub-menus)
 signal start_game_requested
@@ -30,10 +31,15 @@ func _ready():
 	main_menu.one_vs_one_requested.connect(_show_network_menu)
 	main_menu.main_menu_requested.connect(_on_main_menu_requested)
 	
-	# Connect ConfigMenu signals
+	# Connect ConfigMenu signals (main-menu options)
 	config_menu.background_cycle_requested.connect(_on_background_cycle_requested)
 	config_menu.card_scale_changed.connect(_on_card_scale_changed)
-	config_menu.back_to_main_menu_requested.connect(_on_back_to_main_menu)
+	config_menu.back_requested.connect(_on_config_back)
+
+	# Connect PauseOptionsMenu signals (pause-menu options)
+	pause_options.background_cycle_requested.connect(_on_background_cycle_requested)
+	pause_options.card_scale_changed.connect(_on_card_scale_changed)
+	pause_options.back_requested.connect(_on_pause_options_back)
 	
 	# Connect NetworkMenu signals
 	network_menu.back_to_main_menu_requested.connect(_on_network_back_to_main)
@@ -44,6 +50,7 @@ func _ready():
 	pause_menu.main_menu_requested.connect(_on_main_menu_requested)
 	pause_menu.restart_requested.connect(_on_restart_requested)
 	pause_menu.quit_requested.connect(_on_quit_game_requested)
+	pause_menu.options_requested.connect(_on_pause_options_requested)
 	
 	# Start with main menu
 	main_menu.show_menu("CHKOBBA")
@@ -80,9 +87,21 @@ func _on_background_cycle_requested():
 func _on_card_scale_changed(scale: float):
 	emit_signal("card_scale_changed", scale)
 
-func _on_back_to_main_menu():
+func _on_config_back():
 	config_menu.hide_config()
 	main_menu.show_menu("CHKOBBA")
+
+func _on_pause_options_back():
+	# pause_options.hide_config() unpauses; show the pause menu keeps the game paused.
+	pause_options.hide_config()
+	get_tree().paused = false
+	pause_menu.show_pause_menu()
+
+func _on_pause_options_requested():
+	# Open the dedicated pause-options menu; keep the game paused.
+	pause_menu.hide_pause_menu()
+	get_tree().paused = true
+	pause_options.show_options()
 
 func _show_config_menu():
 	main_menu.hide_menu()
@@ -125,6 +144,10 @@ func _unhandled_input(event: InputEvent):
 		elif config_menu.visible:
 			config_menu.hide_config()
 			main_menu.show_menu("CHKOBBA")
+		elif pause_options.visible:
+			pause_options.hide_config()
+			get_tree().paused = false
+			pause_menu.show_pause_menu()
 		elif network_menu.visible:
 			_on_network_back_to_main()
 		else:

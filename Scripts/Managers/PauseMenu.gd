@@ -4,6 +4,7 @@ signal resume_requested
 signal main_menu_requested
 signal restart_requested
 signal quit_requested
+signal options_requested
 
 var pause_icon: TextureButton
 
@@ -37,14 +38,26 @@ func build_ui():
 	title_label.process_mode = Node.PROCESS_MODE_ALWAYS
 	add_child(title_label)
 	
+	# Centered column with equal margins on all edges.
+	var col = VBoxContainer.new()
+	col.add_theme_constant_override("separation", 30)
+	col.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	col.offset_top = 150
+	col.offset_bottom = -120
+	col.offset_left = 100
+	col.offset_right = -100
+	col.alignment = BoxContainer.ALIGNMENT_CENTER
+	col.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(col)
+	
 	var button_container = VBoxContainer.new()
 	button_container.add_theme_constant_override("separation", 20)
-	button_container.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	button_container.offset_left = -140
+	button_container.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	button_container.process_mode = Node.PROCESS_MODE_ALWAYS
-	add_child(button_container)
+	col.add_child(button_container)
 	
 	_add_pause_button("RESUME", func(): _on_button_pressed("resume"), button_container)
+	_add_pause_button("OPTIONS", func(): _on_button_pressed("options"), button_container)
 	_add_pause_button("MAIN MENU", func(): _on_button_pressed("main_menu"), button_container)
 	_add_pause_button("RESTART", func(): _on_button_pressed("restart"), button_container)
 	_add_pause_button("EXIT GAME", func(): _on_button_pressed("quit"), button_container)
@@ -53,6 +66,7 @@ func _on_button_pressed(action: String):
 	hide_pause_menu()
 	match action:
 		"resume": emit_signal("resume_requested")
+		"options": emit_signal("options_requested")
 		"main_menu": emit_signal("main_menu_requested")
 		"restart": emit_signal("restart_requested")
 		"quit": emit_signal("quit_requested")
@@ -72,6 +86,7 @@ func _add_pause_button(text: String, callback: Callable, container: VBoxContaine
 	btn.custom_minimum_size = Vector2(350, 70)
 	btn.add_theme_font_size_override("font_size", 24)
 	btn.focus_mode = Control.FOCUS_NONE
+	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	btn.process_mode = Node.PROCESS_MODE_ALWAYS
 	btn.pressed.connect(callback)
 	container.add_child(btn)
