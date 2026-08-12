@@ -1,5 +1,7 @@
 # 🃏 Chkobba (شكبّة) Card Game Project: Presentation
 
+![Chkobba Game Preview](social-preview.png)
+
 ## 🌟 Project Overview
 
 A digital implementation of **Chkobba** (Arabic: شكبّة / škkubba, sometimes written "Chkobba"), a traditional
