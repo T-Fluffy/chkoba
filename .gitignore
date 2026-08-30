@@ -3,3 +3,6 @@
 /android/
 /build/
 settings.json
+
+# Local demo/view screenshots (not referenced by the project)
+/DemoView/
