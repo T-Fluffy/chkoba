@@ -20,6 +20,7 @@ var is_player_turn: bool = true
 var game_active: bool = false
 var texture_cache: Dictionary = {}
 var current_card_scale: float = 1.0
+var is_dragging_card: bool = false
 
 # --- Match (multi-manche) state ---
 const TARGET_SCORE: int = 21
@@ -503,31 +504,37 @@ func _organize_player_hand_arc():
 	var hand_size = player_hand.size()
 	if hand_size == 0: return
 	var vs = get_viewport().get_visible_rect().size
+	var s = max(current_card_scale, 0.5)
 	var center_x = vs.x / 2
-	var card_spacing = 70
-	var total_width = min(hand_size * card_spacing, 600)
+	var card_spacing = 70 * s
+	var total_width = min(hand_size * card_spacing, vs.x * 0.5)
 	var start_x = center_x - (total_width / 2)
+	var center_y = vs.y - 27.0 - 93.0 * s
 	
 	for i in range(hand_size):
 		var card = player_hand[i]
 		var progress = 0.5 if hand_size == 1 else float(i) / float(hand_size - 1)
 		var final_x = start_x + (progress * total_width)
 		var dist = (progress - 0.5) * 2
-		var final_y = vs.y - 120 + (abs(dist) * 15)
+		var final_y = center_y + (abs(dist) * 15 * s)
 		if card.has_method("animate_to"):
-			card.animate_to(Vector2(final_x, final_y), dist * 15)
+			card.animate_to(Vector2(final_x, final_y), dist * 15, 0.28, i * 0.03)
 			card.z_index = i
+			card.base_z_index = i
 
 func _organize_computer_hand_linear():
 	var hand_size = computer_hand.size()
 	if hand_size == 0: return
 	var vs = get_viewport().get_visible_rect().size
-	@warning_ignore("integer_division")
-	var start_x = (vs.x / 2) - ((hand_size * 80) / 2)
+	var s = max(current_card_scale, 0.5)
+	var start_x = (vs.x / 2) - ((hand_size * 80 * s) / 2)
+	var center_y = 100.0 + 93.0 * (s - 1.0)
 	for i in range(hand_size):
 		var card = computer_hand[i]
 		if card.has_method("animate_to"):
-			card.animate_to(Vector2(start_x + i * 80, 100), 0)
+			card.animate_to(Vector2(start_x + i * 80 * s, center_y), 0, 0.28, i * 0.03)
+			card.z_index = 0
+			card.base_z_index = 0
 
 func end_game():
 	game_active = false
@@ -652,10 +659,14 @@ func _update_all_ai_card_visuals():
 
 func get_table_position(i: int) -> Vector2:
 	var vs = get_viewport().get_visible_rect().size
-	var sx = 160; var sy = 200
-	var start_x = (vs.x - (4 * sx)) / 2 
-	@warning_ignore("integer_division")
-	return Vector2(start_x + (i % 5) * sx, (vs.y / 2) - (sy / 2) + (i / 5) * sy)
+	var s = max(current_card_scale, 0.5)
+	var sx = 160.0 * s
+	var sy = 200.0 * s
+	# Fit-to-screen caps: max 5 columns and 2 rows with margins.
+	sx = min(sx, (vs.x - 80.0) / 5.0)
+	sy = min(sy, (vs.y - 80.0) / 2.0)
+	var start_x = (vs.x - (4 * sx)) / 2.0
+	return Vector2(start_x + (i % 5) * sx, (vs.y / 2.0) - (sy / 2.0) + (i / 5) * sy)
 
 func _update_background_scale():
 	if not background or not background.texture:
@@ -720,6 +731,8 @@ func _apply_card_scale_to_all():
 	for card in computer_hand:
 		if is_instance_valid(card):
 			card.scale = scale_vec
-	for slot in table_slots:
-		if is_instance_valid(slot):
-			slot.scale = scale_vec
+	for i in range(table_slots.size()):
+		if is_instance_valid(table_slots[i]):
+			table_slots[i].scale = scale_vec
+			table_slots[i].position = get_table_position(i)
+	update_hand_visuals()
